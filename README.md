@@ -1,5 +1,5 @@
 
-## Changes
+### Changes
 
 * Update to work with SBT 0.13
 
