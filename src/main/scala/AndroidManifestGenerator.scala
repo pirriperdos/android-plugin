@@ -48,7 +48,10 @@ object AndroidManifestGenerator {
       val manifest = XML.loadFile(manifestTemplatePath)
 
       // Apply transformation rules
-      val newManifest = new RuleTransformer(rules: _*)(manifest)
+      val newManifest: scala.xml.Node = {
+        val a = new RuleTransformer(rules: _*)
+        a(manifest)
+      }
 
       // Create the output file and directories
       sourceManaged.mkdirs()

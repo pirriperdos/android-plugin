@@ -9,6 +9,7 @@ import AndroidPlugin._
 import AndroidHelpers._
 
 import sbinary.DefaultProtocol.StringFormat
+import sbt.Scoped.RichTaskables
 
 object AndroidBase {
   def getNativeTarget(parent: File, name: String, abi: String) = {
@@ -197,10 +198,10 @@ object AndroidBase {
     (manifestPackage, aaptPath, generatedProguardConfigPath,
      manifestPath, resPath, libraryJarPath, managedJavaPath,
      aarlibDependencies, apklibDependencies, apklibSourceManaged,
-     streams, useDebug) map {
+     streams) map {
 
     (mPackage, aPath, proGen, mPath, rPath, jarPath, javaPath,
-     aarlibs, apklibs, apklibJavaPath, s, useDebug) =>
+     aarlibs, apklibs, apklibJavaPath, s) =>
 
     // Create the managed Java path if necessary
     javaPath.mkdirs
@@ -245,8 +246,8 @@ object AndroidBase {
       IO.write(buildConfig, """
         package %s;
         public final class BuildConfig {
-          public static final boolean DEBUG = %s;
-        }""".format(`package`, useDebug))
+          public static final boolean DEBUG = false;
+        }""".format(`package`))
 
       // Return the name of the generated file
       buildConfig
@@ -314,7 +315,7 @@ object AndroidBase {
   /**
    * Returns the internal dependencies for the "provided" scope only
    */
-  def providedInternalDependenciesTask(proj: ProjectRef, struct: Load.BuildStructure) = {
+  def providedInternalDependenciesTask(proj: ProjectRef, struct: BuildStructure) = {
     // "Provided" dependencies of a ResolvedProject
     def providedDeps(op: ResolvedProject): Seq[ProjectRef] = {
       op.dependencies
@@ -331,8 +332,8 @@ object AndroidBase {
     // Return the list of "provided" internal dependencies for the ProjectRef
     // in argument.
     collectDeps(proj)
-      .flatMap(exportedProducts in (_, Compile) get struct.data)
-      .join.map(_.flatten.files)
+      .flatMap((a: ProjectRef) => exportedProducts in (a, Compile) get struct.data)
+      .join.map((a) => a.flatten.files)
   }
 
   val providedInternalDependencies = TaskKey[Seq[File]]("provided-internal-dependencies")
@@ -348,8 +349,8 @@ object AndroidBase {
 
     // Same thing for Scalac
     scalacOptions ++= Seq(
-      "-encoding", "utf8",
-      "-target:jvm-1.6"
+      "-target:jvm-1.6",
+      "-encoding", "utf8"
     ),
 
     // By default, use the first device we find as the ADB target

@@ -129,7 +129,7 @@ object AndroidDdm {
   }
 
   def dumpHprof(app: String, path: String, emulator: Boolean, streams: TaskStreams)
-               (success: (Client, Array[Byte]) => Unit) {
+               (success: (Client, Array[Byte]) => Any) {
     withClient(emulator, path, app) { client =>
         ClientData.setHprofDumpHandler(new IHprofDumpHandler() {
 

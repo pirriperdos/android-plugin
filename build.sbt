@@ -4,7 +4,9 @@ organization := "org.scala-sbt"
 
 version := "0.7.1-SNAPSHOT"
 
-scalacOptions ++= Seq("-unchecked", "-deprecation", "-Xcheckinit", "-Xfatal-warnings")
+scalacOptions ++= Seq("-unchecked", "-deprecation", "-Xcheckinit")
+
+// scalaOptions += "-Xfatal-warnings"
 
 publishMavenStyle := false
 
